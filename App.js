@@ -13,6 +13,9 @@ import LibraryScreen from './Screens/LibraryScreen';
 import PlaySongScreen from './Screens/PlaySongScreen';
 import { Anchor } from 'lucide-react-native';
 import UserScreen from './Screens/UserScreen';
+import DSChan from './Screens/individual/DSChan';
+import DSQuanTam from './Screens/individual/DSQuanTam';
+import DSTamAn from './Screens/individual/DSTamAn';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -58,8 +61,12 @@ const App = () => {
 
         <Stack.Screen name ="TabNavigator" component={TabNavigator}/>
         <Stack.Screen name="Register" component={RegisterScreen} />
-       
+        {/* <Stack.Screen name="User" component={UserScreen} /> */}
+        <Stack.Screen name="DSChan" component={DSChan} />
+        <Stack.Screen name="DSQuanTam" component={DSQuanTam} />
+        <Stack.Screen name="DSTamAn" component={DSTamAn} />
         <Stack.Screen name="Main" component={TabNavigator} options={{ headerShown: false }} />
+        
       </Stack.Navigator>
     </NavigationContainer>
   );
