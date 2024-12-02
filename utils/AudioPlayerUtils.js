@@ -2,21 +2,13 @@ import { Audio } from 'expo-av';
 
 // Hàm cập nhật thanh thời gian
 export const updateTime = (sound, setCurrentTime, setDuration) => {
-  sound.getStatusAsync().then((status) => {
-    if (status.isLoaded) {
-      setCurrentTime(status.positionMillis / 1000);  // Thời gian hiện tại
-      setDuration(status.durationMillis / 1000);    // Tổng thời gian của bài hát
-    }
-  });
-};
-
-// Hàm thay đổi thời gian phát khi người dùng kéo thanh thời gian
-export const seekAudio = async (sound, value, setCurrentTime) => {
-  try {
-    await sound.setPositionAsync(value * 1000); // Chuyển đổi giây thành milliseconds
-    setCurrentTime(value);
-  } catch (error) {
-    console.error("Error seeking audio:", error);
+  if (sound) {
+    sound.getStatusAsync().then((status) => {
+      if (status.isLoaded) {
+        setCurrentTime(status.positionMillis / 1000); // Cập nhật thời gian hiện tại
+        setDuration(status.durationMillis / 1000); // Cập nhật thời gian tổng
+      }
+    });
   }
 };
 
@@ -54,15 +46,8 @@ export const playPauseAudio = async (sound, audioUrl, isPlaying, setSound, setIs
   }
 };
 
-// Hàm updatePlaybackStatus sẽ nhận status và cập nhật thời gian hiện tại và tổng thời gian
-export const updatePlaybackStatus = (status, setCurrentTime, setDuration) => {
-  if (status.isLoaded) {
-    setCurrentTime(status.positionMillis / 1000);  // Cập nhật thời gian hiện tại
-    setDuration(status.durationMillis / 1000);    // Cập nhật tổng thời gian
-  }
-};
 
-// Hàm dừng và giải phóng âm thanh
+// Dừng và giải phóng tài nguyên âm thanh
 export const stopAndUnloadSound = async (sound) => {
   try {
     if (sound && sound._loaded) {
@@ -77,59 +62,18 @@ export const stopAndUnloadSound = async (sound) => {
   }
 };
 
-// Hàm Repeat (Lặp lại)
-export const toggleRepeat = (sound, isRepeat, setIsRepeat) => {
-  if (isRepeat) {
-    // Tắt tính năng lặp lại
-    sound.setOnPlaybackStatusUpdate(null); // Xóa sự kiện khi hoàn thành
-    setIsRepeat(false);
-  } else {
-    // Bật tính năng lặp lại
-    sound.setOnPlaybackStatusUpdate((status) => {
-      if (status.didJustFinish) {
-        // Khi bài hát kết thúc, phát lại từ đầu
-        sound.setPositionAsync(0);
-        sound.playAsync();
-      }
-    });
-    setIsRepeat(true);
-  }
+
+// Hàm Repeat (Lặp lại bài hát)
+export const toggleRepeat = (isRepeat, setIsRepeat) => {
+  setIsRepeat(!isRepeat);
 };
 
-// Hàm Random (Ngẫu nhiên)
-export const playRandomSong = async (songs, setSound, setIsPlaying, setCurrentSongIndex, setIsRandom, sound) => {
-  try {
-    if (songs.length > 0) {
-      const randomIndex = Math.floor(Math.random() * songs.length);
-      const randomSong = songs[randomIndex];
-
-      if (sound && sound._loaded) {
-        await sound.stopAsync();
-        await sound.unloadAsync();
-      }
-
-      const { sound: newSound } = await Audio.Sound.createAsync(
-        { uri: randomSong.uri },
-        { shouldPlay: true }
-      );
-
-      setSound(newSound);
-      setIsPlaying(true);
-      setCurrentSongIndex(randomIndex);
-      setIsRandom(true);
-
-      newSound.setOnPlaybackStatusUpdate((status) => {
-        if (status.didJustFinish) {
-          setIsPlaying(false);
-        }
-      });
-    }
-  } catch (error) {
-    console.log('Error playing random song:', error);
-  }
+// Hàm Random (Phát bài hát ngẫu nhiên)
+export const toggleRandom = (isRandom, setIsRandom) => {
+  setIsRandom(!isRandom);
 };
 
-// Hàm xử lý cho Next (khi có chế độ Repeat hoặc Random)
+// Hàm xử lý bài hát kế tiếp
 export const handleNext = async (
   sound,
   songs,
@@ -196,5 +140,40 @@ export const handleNext = async (
     }
   } catch (error) {
     console.log('Error handling next:', error);
+  }
+};
+// Hàm xử lý bài hát trước đó
+export const handlePrevious = async (sound, songs, currentSongIndex, setSound, setIsPlaying, setCurrentSongIndex) => {
+  try {
+    const previousIndex = (currentSongIndex - 1 + songs.length) % songs.length; // Chuyển đến bài trước
+    const previousSong = songs[previousIndex];
+
+    // Dừng và giải phóng tài nguyên âm thanh hiện tại nếu có
+    if (sound) {
+      await stopAndUnloadSound(sound);
+    }
+
+    // Tải và phát bài hát trước đó
+    const { sound: newSound, status } = await Audio.Sound.createAsync(
+      { uri: previousSong.uri },
+      { shouldPlay: true }
+    );
+
+    // Kiểm tra trạng thái âm thanh đã được tải chưa trước khi phát
+    if (status.isLoaded) {
+      setSound(newSound);
+      setIsPlaying(true);
+      setCurrentSongIndex(previousIndex);
+
+      newSound.setOnPlaybackStatusUpdate((status) => {
+        if (status.didJustFinish) {
+          setIsPlaying(false);
+        }
+      });
+    } else {
+      console.error('Cannot play previous song because sound is not loaded');
+    }
+  } catch (error) {
+    console.error('Error playing previous song:', error);
   }
 };

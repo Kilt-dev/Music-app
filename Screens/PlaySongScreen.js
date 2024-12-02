@@ -1,20 +1,13 @@
-// PlaySong.js
 import React, { useState, useEffect } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
-import { Audio } from 'expo-av';
-import { Ionicons } from '@expo/vector-icons'; 
 import Slider from '@react-native-community/slider';
 import PlayerControls from '../components/PlayerControls';
-import { playPauseAudio, stopAndUnloadSound, seekAudio } from '../utils/AudioPlayerUtils';
+import { playPauseAudio, stopAndUnloadSound } from '../utils/AudioPlayerUtils';
 
 const formatTime = (seconds) => {
   const minutes = Math.floor(seconds / 60);
   const remainingSeconds = Math.floor(seconds % 60);
-
-  const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
-  const formattedSeconds = remainingSeconds < 10 ? `0${remainingSeconds}` : remainingSeconds;
-
-  return `${formattedMinutes}:${formattedSeconds}`;
+  return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
 };
 
 const PlaySong = ({ route, navigation }) => {
@@ -28,61 +21,83 @@ const PlaySong = ({ route, navigation }) => {
   const [currentSongIndex, setCurrentSongIndex] = useState(0);
   const [songsData, setSongsData] = useState([]);
 
+  // Load songs data on mount
   useEffect(() => {
-    const data = require('../assets/data.json');
-    setSongsData(data);
+    const loadSongsData = async () => {
+      try {
+        const data = require('../assets/data.json');
+        setSongsData(data);
+      } catch (error) {
+        console.error('Error loading songs data:', error);
+      }
+    };
+    loadSongsData();
   }, []);
 
+  // Cleanup sound on unmount
   useEffect(() => {
-    if (sound) {
-      const interval = setInterval(() => {
-        sound.getStatusAsync().then((status) => {
-          if (status.isLoaded) {
-            setCurrentTime(status.positionMillis / 1000); 
-            setDuration(status.durationMillis / 1000);    
-          }
-        });
-      }, 1000);  
+    return () => stopAndUnloadSound(sound);
+  }, [sound]);
 
-      return () => clearInterval(interval);  
+  // Update playback time every second
+  useEffect(() => {
+    let interval;
+    if (sound) {
+      interval = setInterval(async () => {
+        try {
+          const status = await sound.getStatusAsync();
+          if (status.isLoaded) {
+            setCurrentTime(status.positionMillis / 1000);
+            setDuration(status.durationMillis / 1000);
+          }
+        } catch (error) {
+          console.error('Error updating playback time:', error);
+        }
+      }, 1000);
     }
+    return () => clearInterval(interval);
   }, [sound]);
 
   const updateSong = async (newSong, index) => {
-    const { title, artist, url, artwork } = newSong;
-    await stopAndUnloadSound(sound);
-    playPauseAudio(sound, url, isPlaying, setSound, setIsPlaying, setCurrentSongIndex, index, isRepeat, isRandom, songsData);
-    navigation.setParams({ title, artist, url, artwork });
-    setCurrentSongIndex(index);
+    try {
+      const { title, artist, url, artwork } = newSong;
+      await stopAndUnloadSound(sound);
+      navigation.setParams({ title, artist, url, artwork });
+      setCurrentSongIndex(index);
+      await playPauseAudio(sound, url, isPlaying, setSound, setIsPlaying);
+    } catch (error) {
+      console.error('Error updating song:', error);
+    }
   };
 
   const handleSliderChange = async (value) => {
     if (sound) {
       try {
-        await sound.setPositionAsync(value * 1000); // Seek to the position in milliseconds
-        setCurrentTime(value); // Update current time
+        await sound.setPositionAsync(value * 1000);
+        setCurrentTime(value);
       } catch (error) {
-        console.error("Error seeking audio:", error);
+        console.error('Error seeking audio:', error);
       }
     }
   };
-  
-  const goToNext = () => {
-    const nextIndex = (currentSongIndex + 1) % songsData.length;
+
+  const handleNext = () => {
+    const nextIndex = isRandom
+      ? Math.floor(Math.random() * songsData.length)
+      : (currentSongIndex + 1) % songsData.length;
     updateSong(songsData[nextIndex], nextIndex);
   };
 
-  const goToPrevious = () => {
-    const previousIndex = (currentSongIndex - 1 + songsData.length) % songsData.length;
-    updateSong(songsData[previousIndex], previousIndex);
+  const handlePrevious = () => {
+    const prevIndex = isRandom
+      ? Math.floor(Math.random() * songsData.length)
+      : (currentSongIndex - 1 + songsData.length) % songsData.length;
+    updateSong(songsData[prevIndex], prevIndex);
   };
-
-  const toggleRepeat = () => setIsRepeat(!isRepeat);
-  const toggleRandom = () => setIsRandom(!isRandom);
 
   const renderItem = ({ item, index }) => (
     <TouchableOpacity
-      style={[styles.songItem, index === currentSongIndex && { backgroundColor: '#f0f8ff' }]}
+      style={[styles.songItem, index === currentSongIndex && styles.activeSong]}
       onPress={() => updateSong(item, index)}
     >
       <Image source={{ uri: item.artwork }} style={styles.songArtwork} />
@@ -107,21 +122,21 @@ const PlaySong = ({ route, navigation }) => {
       <Slider
         style={styles.slider}
         minimumValue={0}
-        maximumValue={duration}
+        maximumValue={duration || 1}
         value={currentTime}
-        onValueChange={handleSliderChange}  
+        onValueChange={handleSliderChange}
         minimumTrackTintColor="#1EB1FC"
         maximumTrackTintColor="#000000"
         thumbTintColor="#1EB1FC"
       />
 
-      <PlayerControls 
+      <PlayerControls
         isPlaying={isPlaying}
-        onPlayPause={() => playPauseAudio(sound, url, isPlaying, setSound, setIsPlaying, setCurrentSongIndex, currentSongIndex, isRepeat, isRandom, songsData)}
-        onSkipBack={goToPrevious}
-        onSkipForward={goToNext}
-        onRepeatToggle={toggleRepeat}
-        onRandomToggle={toggleRandom}
+        onPlayPause={() => playPauseAudio(sound, url, isPlaying, setSound, setIsPlaying)}
+        onSkipBack={handlePrevious}
+        onSkipForward={handleNext}
+        onRepeatToggle={() => setIsRepeat(!isRepeat)}
+        onRandomToggle={() => setIsRandom(!isRandom)}
         isRepeat={isRepeat}
         isRandom={isRandom}
       />
@@ -139,7 +154,6 @@ const PlaySong = ({ route, navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#fff',
   },
@@ -161,10 +175,22 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     textAlign: 'center',
   },
+  timeContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '80%',
+  },
+  timeText: {
+    fontSize: 14,
+    color: '#555',
+  },
+  slider: {
+    width: '80%',
+    marginVertical: 20,
+  },
   songList: {
     width: '100%',
     paddingHorizontal: 20,
-    marginTop: 20,
   },
   songItem: {
     flexDirection: 'row',
@@ -172,6 +198,9 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderBottomWidth: 1,
     borderBottomColor: '#ddd',
+  },
+  activeSong: {
+    backgroundColor: '#f0f8ff',
   },
   songArtwork: {
     width: 50,
@@ -187,20 +216,6 @@ const styles = StyleSheet.create({
   songArtist: {
     fontSize: 14,
     color: '#777',
-  },
-  timeContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
-    paddingHorizontal: 20,
-  },
-  timeText: {
-    fontSize: 14,
-    color: '#555',
-  },
-  slider: {
-    width: '80%',
-    marginVertical: 20,
   },
 });
 
