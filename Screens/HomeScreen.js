@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity, TextInput, ScrollView } from 'react-native';
-import { Search } from 'lucide-react-native'; // Icon từ Lucide
-import { useNavigation } from '@react-navigation/native'; // Hook điều hướng
+import { Search } from 'lucide-react-native'; // Icon from Lucide
+import { useNavigation } from '@react-navigation/native'; // Navigation hook
 
-// Component cho từng bài hát
+// Component for each song
 const SongItem = ({ item, onPress }) => (
   <TouchableOpacity onPress={() => onPress(item)} accessible={true} accessibilityLabel={`Play ${item.title}`}>
     <View style={styles.songItem}>
@@ -16,18 +16,17 @@ const SongItem = ({ item, onPress }) => (
 
 const HomeScreen = () => {
   const [data, setData] = useState([]);
-  const [searchText, setSearchText] = useState('');  // Trạng thái tìm kiếm
-  const navigation = useNavigation(); // Hook điều hướng
+  const [searchText, setSearchText] = useState('');
+  const navigation = useNavigation();
 
-  // Tải dữ liệu bài hát (có thể từ tệp JSON hoặc API)
+  // Fetching song data (could be from a JSON file or API)
   useEffect(() => {
-    const jsonData = require('../assets/data.json');  // Dữ liệu từ tệp data.json
+    const jsonData = require('../assets/data.json');
     setData(jsonData);
   }, []);
 
-  // Hàm xử lý khi nhấn vào bài hát
+  // Handling song press event
   const handleSongPress = (song) => {
-    // Điều hướng đến màn hình PlaySong và truyền dữ liệu bài hát
     navigation.navigate('PlaySong', {
       title: song.title,
       artist: song.artist,
@@ -36,7 +35,7 @@ const HomeScreen = () => {
     });
   };
 
-  // Hàm lọc bài hát theo tìm kiếm
+  // Filtering songs based on search
   const filteredData = data.filter(
     (song) =>
       song.title.toLowerCase().includes(searchText.toLowerCase()) ||
@@ -46,38 +45,27 @@ const HomeScreen = () => {
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        {/* Thanh tìm kiếm */}
+        {/* Search bar */}
         <View style={styles.searchBar}>
-          <TouchableOpacity>
-            <Search size={24} color="#aaa" style={styles.searchIcon} />
-          </TouchableOpacity>
+          <Search size={24} color="#fff" style={styles.searchIcon} />
           <TextInput
             style={styles.searchInput}
-            placeholder="Tìm kiếm bài hát, nghệ sĩ..."
+            placeholder="Search songs, artists..."
+            placeholderTextColor="#fff"
             value={searchText}
-            onChangeText={setSearchText}  // Cập nhật trạng thái tìm kiếm
+            onChangeText={setSearchText}
           />
         </View>
 
-        {/* Banner hoặc quảng cáo */}
+        {/* Banner/Ads */}
         <ScrollView horizontal style={styles.banner}>
           <Image source={require('../assets/posTN.png')} style={styles.bannerImage} />
           <Image source={require('../assets/posTN2.png')} style={styles.bannerImage} />
           <Image source={require('../assets/posTN.png')} style={styles.bannerImage} />
         </ScrollView>
 
-        {/* Tiêu đề và danh sách bài hát */}
-        <Text style={styles.sectionTitle}>Top Bài Hát</Text>
-        <FlatList
-          data={filteredData}
-          renderItem={({ item }) => <SongItem item={item} onPress={handleSongPress} />}
-          keyExtractor={(item) => item.id.toString()}
-          horizontal
-          showsHorizontalScrollIndicator={false}  
-        />
-
-        {/* Tiêu đề và danh sách album */}
-        <Text style={styles.sectionTitle}>Album Mới</Text>
+        {/* Top Songs */}
+        <Text style={styles.sectionTitle}>Top Songs</Text>
         <FlatList
           data={filteredData}
           renderItem={({ item }) => <SongItem item={item} onPress={handleSongPress} />}
@@ -86,8 +74,8 @@ const HomeScreen = () => {
           showsHorizontalScrollIndicator={false}
         />
 
-        {/* Tiêu đề và danh sách gợi ý riêng cho bạn */}
-        <Text style={styles.sectionTitle}>Gợi Ý Riêng Cho Bạn</Text>
+        {/* New Albums */}
+        <Text style={styles.sectionTitle}>New Albums</Text>
         <FlatList
           data={filteredData}
           renderItem={({ item }) => <SongItem item={item} onPress={handleSongPress} />}
@@ -96,8 +84,18 @@ const HomeScreen = () => {
           showsHorizontalScrollIndicator={false}
         />
 
-        {/* Tiêu đề và danh sách có thể bạn muốn nghe */}
-        <Text style={styles.sectionTitle}>Có Thể Bạn Muốn Nghe</Text>
+        {/* Personalized Suggestions */}
+        <Text style={styles.sectionTitle}>Suggestions for You</Text>
+        <FlatList
+          data={filteredData}
+          renderItem={({ item }) => <SongItem item={item} onPress={handleSongPress} />}
+          keyExtractor={(item) => item.id.toString()}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+        />
+
+        {/* You Might Like */}
+        <Text style={styles.sectionTitle}>You Might Like</Text>
         <FlatList
           data={filteredData}
           renderItem={({ item }) => <SongItem item={item} onPress={handleSongPress} />}
@@ -113,72 +111,79 @@ const HomeScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#121212', // Dark background for a modern feel
   },
   scrollContent: {
-    paddingBottom: 80, // Để tạo không gian cho footer
+    paddingBottom: 80, // Create space for footer
   },
   bannerImage: {
-    width: 200,
-    height: 100,
+    width: 250,
+    height: 120,
     borderRadius: 10,
+    marginHorizontal: 5,
     resizeMode: 'cover',
   },
   searchBar: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 10,
-    backgroundColor: '#fff',
-    borderRadius: 20,
-    marginBottom: 15,
+    backgroundColor: '#333',
+    borderRadius: 30,
+    margin: 15,
+    paddingHorizontal: 20,
+    height: 50,
   },
   searchIcon: {
     marginRight: 10,
   },
   searchInput: {
     flex: 1,
-    height: 40,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    borderRadius: 20,
-    paddingLeft: 20,
     fontSize: 16,
+    color: '#fff',
   },
   banner: {
     marginVertical: 10,
-    height: 120,
+    height: 140,
   },
   sectionTitle: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: 'bold',
-    marginVertical: 10,
+    color: '#fff',
+    marginVertical: 15,
     paddingLeft: 20,
   },
   songItem: {
     marginRight: 20,
-    width: 120,
+    width: 140,
     alignItems: 'center',
+    backgroundColor: '#1c1c1c', // Card background for each song
+    padding: 10,
+    borderRadius: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
   },
   albumImage: {
-    width: 100,
-    height: 100,
+    width: 120,
+    height: 120,
     borderRadius: 10,
+    marginBottom: 10,
   },
   songTitle: {
-    marginTop: 10,
+    color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
   },
   artistName: {
+    color: '#aaa',
     fontSize: 14,
-    color: '#555',
   },
   bottomNav: {
     flexDirection: 'row',
-    backgroundColor: '#fff',
+    backgroundColor: '#222',
     paddingVertical: 10,
     borderTopWidth: 1,
-    borderTopColor: '#ccc',
+    borderTopColor: '#444',
     justifyContent: 'space-around',
     position: 'absolute',
     bottom: 0,
@@ -191,7 +196,7 @@ const styles = StyleSheet.create({
   },
   navText: {
     fontSize: 14,
-    color: '#333',
+    color: '#ccc',
   },
 });
 

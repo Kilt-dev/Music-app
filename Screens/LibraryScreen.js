@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image } from 'react-native';
-import { Heart, Download, CloudOff, Upload, Music, User, Video } from 'lucide-react-native'; // Import icons from Lucide
+import { Heart, Download, CloudOff, Upload, Video, User } from 'lucide-react-native'; // Import icons from Lucide
 
 const LibraryScreen = ({ navigation }) => {
   const [data, setData] = useState([]);
@@ -27,7 +27,6 @@ const LibraryScreen = ({ navigation }) => {
 
   // Handle song press event
   const handleSongPress = (song) => {
-    // Navigate to PlaySong screen and pass the song data
     navigation.navigate('PlaySong', {  
       title: song.title,
       artist: song.artist,
@@ -69,8 +68,7 @@ const LibraryScreen = ({ navigation }) => {
         style={styles.libraryList}
       />
 
-      {/* "Recently Played" section title */}
-      <Text style={styles.sectionTitle}>Nghe gần đây</Text>
+      {/* Recently played section */}
       <FlatList
         data={data}  // Use data from the JSON file
         renderItem={renderRecentPlay}
@@ -84,14 +82,14 @@ const LibraryScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#121212', // Dark background
   },
   libraryList: {
     marginVertical: 10,
   },
   libraryItem: {
     marginRight: 15,
-    backgroundColor: '#fff',
+    backgroundColor: '#1e1e1e', // Dark card background
     borderRadius: 10,
     padding: 10,
     alignItems: 'center',
@@ -104,13 +102,7 @@ const styles = StyleSheet.create({
     marginTop: 5,
     fontSize: 14,
     fontWeight: 'bold',
-    color: '#333',
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginVertical: 10,
-    paddingLeft: 20,
+    color: '#fff', // Light text for dark mode
   },
   recentList: {
     paddingLeft: 20,
@@ -119,7 +111,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     paddingVertical: 10,
     paddingHorizontal: 20,
-    backgroundColor: '#fff',
+    backgroundColor: '#1e1e1e', // Dark item background
     borderRadius: 10,
     marginHorizontal: 20,
     flexDirection: 'row',
@@ -134,11 +126,12 @@ const styles = StyleSheet.create({
   recentTitle: {
     fontSize: 16,
     fontWeight: 'bold',
+    color: '#fff', // Light text for dark mode
     flex: 1,
   },
   artistName: {
     fontSize: 14,
-    color: '#555',
+    color: '#aaa', // Light color for the artist's name
   },
 });
 

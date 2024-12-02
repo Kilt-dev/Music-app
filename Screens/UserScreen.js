@@ -7,6 +7,7 @@ const UserScreen = () => {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [darkMode, setDarkMode] = useState(false); // State to track dark mode
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -24,66 +25,72 @@ const UserScreen = () => {
   }, []);
 
   if (loading) {
-    return <div style={styles.loading}>Loading...</div>;
+    return <div style={darkMode ? styles.loadingDark : styles.loading}>Loading...</div>;
   }
 
   if (error) {
-    return <div style={styles.error}>{error}</div>;
+    return <div style={darkMode ? styles.errorDark : styles.error}>{error}</div>;
   }
 
   return (
-    <div style={styles.container}>
-      <div style={styles.header}>
+    <div style={darkMode ? styles.containerDark : styles.container}>
+      <div style={darkMode ? styles.headerDark : styles.header}>
         <div style={styles.userInfo}>
           <img
             src={userData.image}
             alt="User"
             style={styles.userImage}
           />
-          <h2 style={styles.userName}>
+          <h2 style={darkMode ? styles.userNameDark : styles.userName}>
             {userData.firstName} {userData.lastName}
           </h2>
         </div>
         <div style={styles.icons}>
           <TouchableOpacity>
-            <Bell style={styles.icon} />
+            <Bell style={darkMode ? styles.iconDark : styles.icon} />
           </TouchableOpacity>
           <TouchableOpacity>
-            <Settings style={styles.icon} />
+            <Settings style={darkMode ? styles.iconDark : styles.icon} />
           </TouchableOpacity>
         </div>
       </div>
 
       <div style={styles.section}>
-        <h3 style={styles.sectionTitle}>Dịch vụ</h3>
+        <h3 style={darkMode ? styles.sectionTitleDark : styles.sectionTitle}>Dịch vụ</h3>
         <div style={styles.itemsContainer}>
-          <TouchableOpacity style={styles.item}>
-            <Wifi style={styles.sectionIcon} />
-            <span style={styles.itemText}>Tiết kiệm 3G/4G truy cập</span>
+          <TouchableOpacity style={darkMode ? styles.itemDark : styles.item}>
+            <Wifi style={darkMode ? styles.sectionIconDark : styles.sectionIcon} />
+            <span style={darkMode ? styles.itemTextDark : styles.itemText}>Tiết kiệm 3G/4G truy cập</span>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.item}>
-            <ScanLine style={styles.sectionIcon} />
-            <span style={styles.itemText}>Nhập code</span>
+          <TouchableOpacity style={darkMode ? styles.itemDark : styles.item}>
+            <ScanLine style={darkMode ? styles.sectionIconDark : styles.sectionIcon} />
+            <span style={darkMode ? styles.itemTextDark : styles.itemText}>Nhập code</span>
           </TouchableOpacity>
         </div>
       </div>
 
       <div style={styles.section}>
-        <h3 style={styles.sectionTitle}>Cá Nhân</h3>
+        <h3 style={darkMode ? styles.sectionTitleDark : styles.sectionTitle}>Cá Nhân</h3>
         <div style={styles.itemsContainer}>
-          <TouchableOpacity style={styles.item}>
-            <CircleChevronUp style={styles.sectionIcon} />
-            <span style={styles.itemText}>Danh sách quan tâm</span>
+          <TouchableOpacity style={darkMode ? styles.itemDark : styles.item}>
+            <CircleChevronUp style={darkMode ? styles.sectionIconDark : styles.sectionIcon} />
+            <span style={darkMode ? styles.itemTextDark : styles.itemText}>Danh sách quan tâm</span>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.item}>
-            <ShieldBan style={styles.sectionIcon} />
-            <span style={styles.itemText}>Danh sách chặn</span>
+          <TouchableOpacity style={darkMode ? styles.itemDark : styles.item}>
+            <ShieldBan style={darkMode ? styles.sectionIconDark : styles.sectionIcon} />
+            <span style={darkMode ? styles.itemTextDark : styles.itemText}>Danh sách chặn</span>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.item}>
-            <EyeOff style={styles.sectionIcon} />
-            <span style={styles.itemText}>Danh sách tạm ẩn</span>
+          <TouchableOpacity style={darkMode ? styles.itemDark : styles.item}>
+            <EyeOff style={darkMode ? styles.sectionIconDark : styles.sectionIcon} />
+            <span style={darkMode ? styles.itemTextDark : styles.itemText}>Danh sách tạm ẩn</span>
           </TouchableOpacity>
         </div>
+      </div>
+
+      <div style={styles.toggleButton}>
+        <button onClick={() => setDarkMode(!darkMode)} style={styles.button}>
+          {darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+        </button>
       </div>
     </div>
   );
@@ -92,12 +99,22 @@ const UserScreen = () => {
 const styles = {
   container: {
     fontFamily: 'Arial, sans-serif',
-    backgroundColor: '#e6f7ff', // Light blue background
+    backgroundColor: '#f1f1f1', // Light background
     minHeight: '100vh',
     padding: '30px',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
+  },
+  containerDark: {
+    fontFamily: 'Arial, sans-serif',
+    backgroundColor: '#121212', // Dark background (Night mode)
+    minHeight: '100vh',
+    padding: '30px',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    color: '#eaeaea', // Lighter text for night mode
   },
   header: {
     display: 'flex',
@@ -112,13 +129,32 @@ const styles = {
     maxWidth: '900px',
     transition: 'all 0.3s ease',
   },
+  headerDark: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: '#333', // Darker header background
+    padding: '20px 30px',
+    borderRadius: '12px',
+    boxShadow: '0 8px 16px rgba(0, 0, 0, 0.2)',
+    marginBottom: '30px',
+    width: '100%',
+    maxWidth: '900px',
+    transition: 'all 0.3s ease',
+  },
   icons: {
     display: 'flex',
     gap: '25px',
   },
   icon: {
     fontSize: '28px',
-    color: '#007bff', // Blue color for icons
+    color: 'black', // Bright blue color for icons
+    cursor: 'pointer',
+    transition: 'color 0.3s',
+  },
+  iconDark: {
+    fontSize: '28px',
+    color: '#eaeaea', // Light color for icons in dark mode
     cursor: 'pointer',
     transition: 'color 0.3s',
   },
@@ -136,7 +172,13 @@ const styles = {
   userName: {
     fontSize: '24px',
     fontWeight: 'bold',
-    color: '#333',
+    color: '#333', // Normal text color
+    margin: 0,
+  },
+  userNameDark: {
+    fontSize: '24px',
+    fontWeight: 'bold',
+    color: '#eaeaea', // Lighter text for dark mode
     margin: 0,
   },
   section: {
@@ -147,7 +189,15 @@ const styles = {
   sectionTitle: {
     fontSize: '20px',
     fontWeight: 'bold',
-    color: '#007bff', // Blue color for section titles
+    color: '#1c1c1c', // Blue color for section titles
+    marginBottom: '15px',
+    textTransform: 'uppercase',
+    letterSpacing: '1px',
+  },
+  sectionTitleDark: {
+    fontSize: '20px',
+    fontWeight: 'bold',
+    color: '#fff', // White color for section titles in dark mode
     marginBottom: '15px',
     textTransform: 'uppercase',
     letterSpacing: '1px',
@@ -159,6 +209,13 @@ const styles = {
     boxShadow: '0 6px 12px rgba(0, 0, 0, 0.1)',
     transition: 'all 0.3s ease',
   },
+  itemsContainerDark: {
+    backgroundColor: '#444', // Darker background for items container
+    padding: '20px',
+    borderRadius: '12px',
+    boxShadow: '0 6px 12px rgba(0, 0, 0, 0.2)',
+    transition: 'all 0.3s ease',
+  },
   item: {
     display: 'flex',
     flexDirection : "row",
@@ -166,29 +223,70 @@ const styles = {
     marginBottom: '15px',
     cursor: 'pointer',
     transition: 'background-color 0.3s, transform 0.3s',
+    backgroundColor: '#f8f9fa', // Lighter background color for items
+    color: '#333', // Text color
+    borderRadius: '8px',
+    padding: '10px',
   },
-  itemHover: {
-    backgroundColor: '#f0f8ff', // Light blue hover effect
-    transform: 'scale(1.02)',
+  itemDark: {
+    display: 'flex',
+    flexDirection : "row",
+    alignItems: 'center',
+    marginBottom: '15px',
+    cursor: 'pointer',
+    transition: 'background-color 0.3s, transform 0.3s',
+    backgroundColor: '#444', // Darker item background
+    color: '#eaeaea', // Lighter text for items in dark mode
+    borderRadius: '8px',
+    padding: '10px',
   },
   sectionIcon: {
     fontSize: '24px',
-    color: '#007bff', // Blue color for icons
-    marginRight: '15px',
+    marginRight: '10px',
+    color: '#007bff',
+  },
+  sectionIconDark: {
+    fontSize: '24px',
+    marginRight: '10px',
+    color: '#fff',
   },
   itemText: {
-    fontSize: '18px',
+    fontSize: '16px',
+    fontWeight: 'normal',
     color: '#333',
+  },
+  itemTextDark: {
+    fontSize: '16px',
+    fontWeight: 'normal',
+    color: '#eaeaea', // Lighter text for dark mode
+  },
+  toggleButton: {
+    marginTop: '20px',
+  },
+  button: {
+    padding: '10px 20px',
+    backgroundColor: '#007bff',
+    color: '#fff',
+    border: 'none',
+    borderRadius: '6px',
+    cursor: 'pointer',
+    fontSize: '16px',
   },
   loading: {
-    textAlign: 'center',
-    fontSize: '20px',
-    color: '#333',
+    fontSize: '24px',
+    color: '#007bff',
+  },
+  loadingDark: {
+    fontSize: '24px',
+    color: '#eaeaea', // Lighter loading color in dark mode
   },
   error: {
-    textAlign: 'center',
-    fontSize: '20px',
-    color: 'red',
+    fontSize: '24px',
+    color: '#f44336', // Red color for error
+  },
+  errorDark: {
+    fontSize: '24px',
+    color: '#f44336', // Red color for error in dark mode
   },
 };
 
