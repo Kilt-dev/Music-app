@@ -56,7 +56,16 @@ const PlaySong = ({ route, navigation }) => {
     setCurrentSongIndex(index);
   };
 
-
+  const handleSliderChange = async (value) => {
+    if (sound) {
+      try {
+        await sound.setPositionAsync(value * 1000); // Seek to the position in milliseconds
+        setCurrentTime(value); // Update current time
+      } catch (error) {
+        console.error("Error seeking audio:", error);
+      }
+    }
+  };
   
   const goToNext = () => {
     const nextIndex = (currentSongIndex + 1) % songsData.length;
@@ -100,7 +109,7 @@ const PlaySong = ({ route, navigation }) => {
         minimumValue={0}
         maximumValue={duration}
         value={currentTime}
-        onValueChange={seekAudio}  
+        onValueChange={handleSliderChange}  
         minimumTrackTintColor="#1EB1FC"
         maximumTrackTintColor="#000000"
         thumbTintColor="#1EB1FC"

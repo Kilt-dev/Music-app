@@ -61,7 +61,13 @@ const HomeScreen = () => {
         <ScrollView horizontal style={styles.banner}>
           <Image source={require('../assets/posTN.png')} style={styles.bannerImage} />
           <Image source={require('../assets/posTN2.png')} style={styles.bannerImage} />
-          <Image source={require('../assets/posTN.png')} style={styles.bannerImage} />
+          <Image source={require('../assets/BN4.png')} style={styles.bannerImage} />
+          <Image source={require('../assets/BN5.png')} style={styles.bannerImage} />
+          <Image source={require('../assets/BN1.png')} style={styles.bannerImage} />
+          <Image source={require('../assets/BN2.png')} style={styles.bannerImage} />
+          <Image source={require('../assets/BN3.png')} style={styles.bannerImage} />
+          <Image source={require('../assets/BN4.png')} style={styles.bannerImage} />
+          <Image source={require('../assets/BN5.png')} style={styles.bannerImage} />
         </ScrollView>
 
         {/* Top Songs */}

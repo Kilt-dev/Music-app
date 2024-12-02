@@ -11,11 +11,12 @@ export const updateTime = (sound, setCurrentTime, setDuration) => {
 };
 
 // Hàm thay đổi thời gian phát khi người dùng kéo thanh thời gian
-export const seekAudio = async (value, sound, setCurrentTime) => {
-  if (sound) {
-    // Di chuyển bài hát đến thời gian mới (value là giá trị mới từ slider)
-    await sound.setPositionAsync(value * 1000);  // setPositionAsync nhận thời gian tính theo milliseconds
+export const seekAudio = async (sound, value, setCurrentTime) => {
+  try {
+    await sound.setPositionAsync(value * 1000); // Chuyển đổi giây thành milliseconds
     setCurrentTime(value);
+  } catch (error) {
+    console.error("Error seeking audio:", error);
   }
 };
 

@@ -48,12 +48,14 @@ const LibraryScreen = ({ navigation }) => {
 
   // Render each library item like "Bài hát yêu thích", "Đã tải", etc.
   const renderItem = ({ item }) => (
+    <TouchableOpacity>
     <View style={styles.libraryItem}>
       <View style={styles.itemContent}>
         {item.icon}
         <Text style={styles.itemText}>{item.title}</Text>
       </View>
     </View>
+    </TouchableOpacity>
   );
 
   return (
@@ -67,13 +69,16 @@ const LibraryScreen = ({ navigation }) => {
         showsHorizontalScrollIndicator={false}
         style={styles.libraryList}
       />
-
+    
       {/* Recently played section */}
       <FlatList
         data={data}  // Use data from the JSON file
         renderItem={renderRecentPlay}
         keyExtractor={(item) => item.id.toString()}
         style={styles.recentList}
+        ListHeaderComponent={() => (
+          <Text style={styles.recentHeader}>Nghe gần đây</Text>
+        )}
       />
     </View>
   );
@@ -84,6 +89,13 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#121212', // Dark background
   },
+  recentHeader: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#fff', // Light text for dark mode
+    marginVertical: 10,
+    marginLeft: 20,
+  },
   libraryList: {
     marginVertical: 10,
   },
@@ -93,7 +105,8 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 10,
     alignItems: 'center',
-    width: 100,
+    width: 140,
+    height : 120
   },
   itemContent: {
     alignItems: 'center',
@@ -102,7 +115,9 @@ const styles = StyleSheet.create({
     marginTop: 5,
     fontSize: 14,
     fontWeight: 'bold',
-    color: '#fff', // Light text for dark mode
+    color: '#fff',
+    textAlign: 'center',
+    flexWrap: 'wrap', 
   },
   recentList: {
     paddingLeft: 20,

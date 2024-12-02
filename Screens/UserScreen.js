@@ -11,6 +11,7 @@ const UserScreen = () => {
   const [error, setError] = useState('');
   const [darkMode, setDarkMode] = useState(false);
   const [visible, setVisible] = useState(false); // State to control Dialog visibility
+  const [notification, setNotification] = useState(''); // State to control notification message
   
   const navigation = useNavigation(); // Hook for navigation
 
@@ -50,6 +51,10 @@ const UserScreen = () => {
     hideDialog(); // Hide Dialog after logout
   };
 
+  const handleBellClick = () => {
+    setNotification('Không có thông báo'); // Set the notification message when the bell is clicked
+  };
+
   return (
     <Provider>
       <ScrollView contentContainerStyle={darkMode ? styles.containerDark : styles.container}>
@@ -64,7 +69,7 @@ const UserScreen = () => {
             </Text>
           </View>
           <View style={styles.icons}>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={handleBellClick}>  {/* Add the onPress event */}
               <Bell style={darkMode ? styles.iconDark : styles.icon} />
             </TouchableOpacity>
             <TouchableOpacity>
@@ -72,6 +77,15 @@ const UserScreen = () => {
             </TouchableOpacity>
           </View>
         </View>
+
+        {/* Show notification message */}
+        {notification && (
+          <View style={styles.notificationContainer}>
+            <Text style={darkMode ? styles.notificationTextDark : styles.notificationText}>
+              {notification}
+            </Text>
+          </View>
+        )}
 
         <View style={styles.section}>
           <Text style={darkMode ? styles.sectionTitleDark : styles.sectionTitle}>Dịch vụ</Text>
@@ -135,8 +149,8 @@ const UserScreen = () => {
               <Text>Bạn có chắc chắn muốn đăng xuất không?</Text>
             </Dialog.Content>
             <Dialog.Actions>
-              <Button  style={{ fontSize: 30, paddingVertical: 12, paddingHorizontal: 20 }}onPress={hideDialog}>Hủy</Button>
-              <Button  style={{ fontSize: 30, paddingVertical: 12, paddingHorizontal: 20 }}onPress={handleLogout}>Đăng xuất</Button>
+              <Button style={{ fontSize: 30, paddingVertical: 12, paddingHorizontal: 20 }} onPress={hideDialog}>Hủy</Button>
+              <Button style={{ fontSize: 30, paddingVertical: 12, paddingHorizontal: 20 }} onPress={handleLogout}>Đăng xuất</Button>
             </Dialog.Actions>
           </Dialog>
         </Portal>
@@ -243,11 +257,11 @@ const styles = {
     alignItems: 'center',
     paddingVertical: 10,
     borderBottomWidth: 1,
-    borderBottomColor: '#444',
+    borderBottomColor: '#1c1c1c',
   },
   sectionIcon: {
     fontSize: 24,
-    color: '#333',
+    color: '#1c1c1c',
     marginRight: 15,
   },
   sectionIconDark: {
@@ -257,7 +271,7 @@ const styles = {
   },
   itemText: {
     fontSize: 16,
-    color: '#333',
+    color: '#1c1c1c',
   },
   itemTextDark: {
     fontSize: 16,

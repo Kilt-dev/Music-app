@@ -53,9 +53,8 @@ const AudioPlayer = ({ audioUrl }) => {
   }, [sound, isPlaying]);
 
   const handleSliderChange = async (value) => {
-    setCurrentTime(value);  // Cập nhật thời gian slider
     if (sound) {
-      await seekAudio(sound, value, setCurrentTime);  // Di chuyển đến vị trí mới của âm thanh
+      await seekAudio(sound, value, setCurrentTime); // Gọi hàm seek để thay đổi vị trí phát
     }
   };
 
