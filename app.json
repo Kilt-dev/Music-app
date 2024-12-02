@@ -1,5 +1,6 @@
 {
   "expo": {
+    "disableBridgeless": true,
     "name": "Music_app",
     "slug": "Music_app",
     "version": "1.0.0",
