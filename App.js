@@ -16,7 +16,13 @@ import UserScreen from './Screens/UserScreen';
 import DSChan from './Screens/individual/DSChan';
 import DSQuanTam from './Screens/individual/DSQuanTam';
 import DSTamAn from './Screens/individual/DSTamAn';
-
+import Off from './Screens/LIB/Off';
+import YeuThich from './Screens/LIB/YeuThich';
+import DaTai from './Screens/LIB/DaTai';
+import MV from './Screens/LIB/MV';
+import Upload from './Screens/LIB/Upload';
+import { Provider as PaperProvider } from 'react-native-paper'; 
+import NgheSi from './Screens/LIB/NgheSi';
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
@@ -65,6 +71,12 @@ const App = () => {
         <Stack.Screen name="DSChan" component={DSChan} />
         <Stack.Screen name="DSQuanTam" component={DSQuanTam} />
         <Stack.Screen name="DSTamAn" component={DSTamAn} />
+        <Stack.Screen name="MV" component={MV} />
+        <Stack.Screen name="DaTai" component={DaTai} />
+        <Stack.Screen name="YeuThich" component={YeuThich} />
+        <Stack.Screen name="Upload" component={Upload} />
+        <Stack.Screen name="Off" component={Off} />
+        <Stack.Screen name="NgheSi" component={NgheSi} />
         <Stack.Screen name="Main" component={TabNavigator} options={{ headerShown: false }} />
         
       </Stack.Navigator>

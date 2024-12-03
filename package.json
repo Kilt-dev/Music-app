@@ -18,6 +18,7 @@
     "axios": "^1.7.8",
     "expo": "^52.0.11",
     "expo-av": "~15.0.1",
+    "expo-document-picker": "~13.0.1",
     "expo-status-bar": "~2.0.0",
     "lucide": "^0.460.0",
     "lucide-react": "^0.462.0",

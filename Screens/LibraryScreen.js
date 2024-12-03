@@ -7,12 +7,12 @@ const LibraryScreen = ({ navigation }) => {
 
   // Simulate static data for lists like favorites, downloads, etc.
   const items = [
-    { id: 1, title: 'Bài hát yêu thích', icon: <Heart size={24} color="#ff4081" /> },
-    { id: 2, title: 'Đã tải', icon: <Download size={24} color="#4CAF50" /> },
-    { id: 3, title: 'Offline', icon: <CloudOff size={24} color="#607d8b" /> },
-    { id: 4, title: 'Upload', icon: <Upload size={24} color="#9e9e9e" /> },
-    { id: 5, title: 'MV', icon: <Video size={24} color="#f44336" /> },
-    { id: 6, title: 'Nghệ sỹ', icon: <User size={24} color="#3f51b5" /> },
+    { id: 1, title: 'Bài hát yêu thích', icon: <Heart size={24} color="#ff4081" />, screen: 'YeuThich' },
+    { id: 2, title: 'Đã tải', icon: <Download size={24} color="#4CAF50" />, screen: 'DaTai' },
+    { id: 3, title: 'Offline', icon: <CloudOff size={24} color="#607d8b" />, screen: 'Off' },
+    { id: 4, title: 'Upload', icon: <Upload size={24} color="#9e9e9e" />, screen: 'Upload' },
+    { id: 5, title: 'MV', icon: <Video size={24} color="#f44336" />, screen: 'MV' },
+    { id: 6, title: 'Nghệ sỹ', icon: <User size={24} color="#3f51b5" />, screen: 'NgheSi' },
   ];
 
   // Fetch the data from the JSON file on component mount
@@ -48,13 +48,13 @@ const LibraryScreen = ({ navigation }) => {
 
   // Render each library item like "Bài hát yêu thích", "Đã tải", etc.
   const renderItem = ({ item }) => (
-    <TouchableOpacity>
-    <View style={styles.libraryItem}>
-      <View style={styles.itemContent}>
-        {item.icon}
-        <Text style={styles.itemText}>{item.title}</Text>
+    <TouchableOpacity onPress={() => navigation.navigate(item.screen)}>
+      <View style={styles.libraryItem}>
+        <View style={styles.itemContent}>
+          {item.icon}
+          <Text style={styles.itemText}>{item.title}</Text>
+        </View>
       </View>
-    </View>
     </TouchableOpacity>
   );
 
@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
     padding: 10,
     alignItems: 'center',
     width: 140,
-    height : 120
+    height: 120,
   },
   itemContent: {
     alignItems: 'center',
@@ -117,7 +117,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#fff',
     textAlign: 'center',
-    flexWrap: 'wrap', 
+    flexWrap: 'wrap',
   },
   recentList: {
     paddingLeft: 20,
