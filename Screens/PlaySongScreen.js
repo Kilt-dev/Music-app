@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
 import Slider from '@react-native-community/slider';
 import PlayerControls from '../components/PlayerControls';
-import { playPauseAudio, stopAndUnloadSound } from '../utils/AudioPlayerUtils';
+import { playPauseAudio, stopAndUnloadSound ,toggleRepeat } from '../utils/AudioPlayerUtils';
 
 const formatTime = (seconds) => {
   const minutes = Math.floor(seconds / 60);
@@ -82,19 +82,26 @@ const PlaySong = ({ route, navigation }) => {
   };
 
   const handleNext = () => {
-    const nextIndex = isRandom
-      ? Math.floor(Math.random() * songsData.length)
-      : (currentSongIndex + 1) % songsData.length;
-    updateSong(songsData[nextIndex], nextIndex);
+    if (isRepeat) {
+      // Nếu repeat là true, lặp lại bài hát hiện tại
+      updateSong(songsData[currentSongIndex], currentSongIndex);
+    } else {
+      // Nếu không có repeat, chuyển sang bài hát tiếp theo
+      const nextIndex = isRandom
+        ? Math.floor(Math.random() * songsData.length)
+        : (currentSongIndex + 1) % songsData.length;
+      updateSong(songsData[nextIndex], nextIndex);
+    }
   };
-
   const handlePrevious = () => {
     const prevIndex = isRandom
       ? Math.floor(Math.random() * songsData.length)
       : (currentSongIndex - 1 + songsData.length) % songsData.length;
     updateSong(songsData[prevIndex], prevIndex);
   };
-
+  const toggleRepeat = (isRepeat, setIsRepeat) => {
+    setIsRepeat((prevRepeat) => !prevRepeat);
+  };
   const renderItem = ({ item, index }) => (
     <TouchableOpacity
       style={[styles.songItem, index === currentSongIndex && styles.activeSong]}
@@ -135,7 +142,7 @@ const PlaySong = ({ route, navigation }) => {
         onPlayPause={() => playPauseAudio(sound, url, isPlaying, setSound, setIsPlaying)}
         onSkipBack={handlePrevious}
         onSkipForward={handleNext}
-        onRepeatToggle={() => setIsRepeat(!isRepeat)}
+        onRepeatToggle={() => setIsRepeat(!isRepeat)} // Toggle repeat
         onRandomToggle={() => setIsRandom(!isRandom)}
         isRepeat={isRepeat}
         isRandom={isRandom}
